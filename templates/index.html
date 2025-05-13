@@ -10,5 +10,9 @@
         </div>
     {% endfor %}
     <button class="btn btn-primary">Enviar Pedido</button>
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('admin_usuarios') }}" class="btn btn-warning mt-3">Panel de Usuarios</a>
+    {% endif %}
+
 </form>
 {% endblock %}

@@ -111,6 +111,60 @@ def completar_pedido(pid):
         db.session.commit()
     return redirect(url_for('ver_pedidos'))
 
+
+@app.route('/admin/usuarios')
+@login_required
+def admin_usuarios():
+    if not current_user.is_admin:
+        flash("Acceso no autorizado")
+        return redirect(url_for('index'))
+
+    usuarios = Usuario.query.all()
+    return render_template('admin_usuarios.html', usuarios=usuarios)
+
+@app.route('/admin/hacer_admin/<int:usuario_id>')
+@login_required
+def hacer_admin(usuario_id):
+    if not current_user.is_admin:
+        flash("Acceso no autorizado")
+        return redirect(url_for('index'))
+
+    usuario = Usuario.query.get(usuario_id)
+    if usuario:
+        usuario.is_admin = True
+        db.session.commit()
+        flash(f"{usuario.username} ahora es administrador.")
+    return redirect(url_for('admin_usuarios'))
+
+@app.route('/admin/pedidos')
+@login_required
+def admin_pedidos():
+    if not current_user.is_admin:
+        return redirect(url_for('index'))
+
+    filtro_usuario = request.args.get('usuario', '')
+    filtro_completado = request.args.get('completado', '')
+    orden_fecha = request.args.get('orden_fecha', 'desc')
+
+    pedidos = Pedido.query
+
+    if filtro_usuario:
+        pedidos = pedidos.join(Usuario).filter(Usuario.username.contains(filtro_usuario))
+    
+    if filtro_completado == '1':
+        pedidos = pedidos.filter(Pedido.completado == True)
+    elif filtro_completado == '0':
+        pedidos = pedidos.filter(Pedido.completado == False)
+    
+    if orden_fecha == 'asc':
+        pedidos = pedidos.order_by(Pedido.fecha.asc())
+    else:
+        pedidos = pedidos.order_by(Pedido.fecha.desc())
+
+    pedidos = pedidos.all()
+    return render_template('admin_pedidos.html', pedidos=pedidos)
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
