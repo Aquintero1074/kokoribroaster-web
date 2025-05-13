@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Pedidos{% endblock %}
+{% block content %}
+<h2>Mis Pedidos</h2>
+{% for pedido in pedidos %}
+<div class="card mb-3">
+    <div class="card-header">
+        Pedido #{{ pedido.id }} - ${{ pedido.total }} - Estado: 
+        <strong>{{ 'Completado' if pedido.completado else 'Pendiente' }}</strong>
+    </div>
+    <div class="card-body">
+        <ul class="list-group">
+            {% for item in pedido.items %}
+            <li class="list-group-item">
+                {{ item.cantidad }} x {{ item.nombre }} = ${{ item.subtotal }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if not pedido.completado %}
+    <div class="card-footer">
+        <a href="{{ url_for('completar_pedido', pid=pedido.id) }}" class="btn btn-sm btn-success">Marcar como completado</a>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<p>No hay pedidos realizados.</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Menú - Kokoribroaster{% endblock %}
+{% block content %}
+<h2>Hacer Pedido</h2>
+<form method="POST" action="{{ url_for('hacer_pedido') }}">
+    {% for id, item in menu.items() %}
+        <div class="mb-3">
+            <label class="form-label">{{ item.nombre }} - ${{ item.precio }}</label>
+            <input type="number" class="form-control" name="producto_{{ id }}" min="0" value="0">
+        </div>
+    {% endfor %}
+    <button class="btn btn-primary">Enviar Pedido</button>
+</form>
+{% endblock %}
