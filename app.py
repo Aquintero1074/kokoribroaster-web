@@ -30,8 +30,10 @@ def load_user(user_id):
     return Usuario.query.get(int(user_id))
 
 @app.before_first_request
-def create_tables():
-    db.create_all()
+def initialize():
+    with app.app_context():
+        db.create_all()
+
 
 @app.route('/')
 @login_required
